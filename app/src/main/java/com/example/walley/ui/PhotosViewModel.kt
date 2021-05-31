@@ -1,55 +1,44 @@
 package com.example.walley.ui
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.walley.data.FetchPhotosRepository
+import com.example.walley.data.db.PhotosRepository
+import com.example.walley.data.network.FetchPhotosRepository
 import com.example.walley.model.Photo
-import com.example.walley.model.PhotosBody
-import com.google.gson.Gson
 
-class PhotosViewModel(private val photosRepository: FetchPhotosRepository) : ViewModel() {
+class PhotosViewModel(
+    fetchPhotosRepository: FetchPhotosRepository,
+    photosRepository: PhotosRepository
+) : ViewModel() {
 
-    private val _photoList = MutableLiveData<List<Photo>>()
-    val photoList : LiveData<List<Photo>>
-        get() = _photoList
+    val photoList: LiveData<List<Photo>> = photosRepository.photos
 
-    private val _photoFetchStatus = MutableLiveData<PhotosFetchStatus>()
-    val photoFetchStatus : LiveData<PhotosFetchStatus>
-        get() = _photoFetchStatus
+//    private val _photoFetchStatus = MutableLiveData<PhotosFetchStatus>()
+//    val photoFetchStatus : LiveData<PhotosFetchStatus>
+//        get() = _photoFetchStatus
 
     init {
-        _photoFetchStatus.value = PhotosFetchStatus.FETCHING
-
-        photosRepository.fetchCuratedPhotos(
-            onSuccess = { response ->
-                convertJsonResponseIntoPhotoList(jsonResponse = response)
-                _photoFetchStatus.value = PhotosFetchStatus.FETCHED
-            },
-
+        fetchPhotosRepository.fetchCuratedPhotos(
             onFailure = {
-                _photoFetchStatus.value = PhotosFetchStatus.FAILURE
+//                _photoFetchStatus.value = PhotosFetchStatus.FAILURE
             }
         )
     }
 
-    private fun convertJsonResponseIntoPhotoList(jsonResponse: String) {
-        val photosBody : PhotosBody = Gson().fromJson(jsonResponse, PhotosBody::class.java) ?: return
-        _photoList.value = photosBody.photos
-    }
 
     class Factory(
-        private val photosRepository: FetchPhotosRepository
+        private val fetchPhotosRepository: FetchPhotosRepository,
+        private val photosRepository: PhotosRepository
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return PhotosViewModel(photosRepository) as T
+            return PhotosViewModel(fetchPhotosRepository, photosRepository) as T
         }
 
     }
 }
 
-enum class PhotosFetchStatus{
+enum class PhotosFetchStatus {
     FETCHING,
     FETCHED,
     FAILURE

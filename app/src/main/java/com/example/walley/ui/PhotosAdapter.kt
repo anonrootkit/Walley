@@ -1,7 +1,9 @@
 package com.example.walley.ui
 
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.graphics.drawable.toBitmap
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -10,10 +12,12 @@ import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.example.walley.databinding.PhotoListItemBinding
 import com.example.walley.model.Photo
-import com.squareup.picasso.Picasso
 
 
-class PhotosAdapter(private val layoutInflater : LayoutInflater) : ListAdapter<Photo, PhotosAdapter.ViewHolder>(DiffUtilCallback) {
+class PhotosAdapter(
+    private val layoutInflater : LayoutInflater,
+    private val onItemClick : (Bitmap) -> Unit
+    ) : ListAdapter<Photo, PhotosAdapter.ViewHolder>(DiffUtilCallback) {
 
     object DiffUtilCallback : DiffUtil.ItemCallback<Photo>() {
         override fun areItemsTheSame(oldItem: Photo, newItem: Photo): Boolean {
@@ -45,6 +49,11 @@ class PhotosAdapter(private val layoutInflater : LayoutInflater) : ListAdapter<P
                 .build()
         )
         Glide.with(holder.binding.photo).load(url).into(holder.binding.photo)
+
+        holder.binding.root.setOnClickListener {
+            val bitmap = holder.binding.photo.drawable.toBitmap()
+            onItemClick(bitmap)
+        }
 
 //        holder.binding.executePendingBindings()
     }
