@@ -16,7 +16,7 @@ import com.example.walley.model.Photo
 
 class PhotosAdapter(
     private val layoutInflater : LayoutInflater,
-    private val onItemClick : (Bitmap) -> Unit
+    private val onItemClick : (Bitmap, String, Int) -> Unit
     ) : ListAdapter<Photo, PhotosAdapter.ViewHolder>(DiffUtilCallback) {
 
     object DiffUtilCallback : DiffUtil.ItemCallback<Photo>() {
@@ -52,7 +52,7 @@ class PhotosAdapter(
 
         holder.binding.root.setOnClickListener {
             val bitmap = holder.binding.photo.drawable.toBitmap()
-            onItemClick(bitmap)
+            onItemClick(bitmap, photo.photographer, position)
         }
 
 //        holder.binding.executePendingBindings()

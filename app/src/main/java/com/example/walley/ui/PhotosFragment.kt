@@ -17,6 +17,7 @@ import com.example.walley.data.db.PhotosRepository
 import com.example.walley.data.db.WalleyDatabase
 import com.example.walley.data.network.FetchPhotosRepository
 import com.example.walley.databinding.FragmentPhotosBinding
+import com.example.walley.ui.bottomsheet.BottomSheetFragment
 
 class PhotosFragment : Fragment() {
 
@@ -24,9 +25,9 @@ class PhotosFragment : Fragment() {
     private lateinit var viewModel: PhotosViewModel
 
     private val photosAdapter : PhotosAdapter by lazy {
-        PhotosAdapter(layoutInflater, onItemClick = { bitmap ->
-            getAppInternalPath()
-            setWallpaper(bitmap)
+        PhotosAdapter(layoutInflater, onItemClick = { bitmap, photograhperName, position ->
+            val bottomSheetFragment = BottomSheetFragment(bitmap, photograhperName, position)
+            bottomSheetFragment.showNow(childFragmentManager, null)
         })
     }
 
@@ -96,11 +97,6 @@ class PhotosFragment : Fragment() {
         return Volley.newRequestQueue(requireContext())
     }
 
-//    private fun getAppInternalPath() : String {
-//        val dirs = requireContext().getExternalFilesDirs(null)
-//        val path = dirs[0].absolutePath
-//        File("$path/huha.txt").createNewFile()
-//        Toast.makeText(requireContext(), path, Toast.LENGTH_SHORT).show()
-//        return path
-//    }
+
+
 }
